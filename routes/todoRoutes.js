@@ -1,30 +1,46 @@
 const express = require("express");
+const Todo = require("../models/todo");  // Import the Todo model
 const router = express.Router();
-const Todo = require("C:\\Users\\test0\\OneDrive\\מסמכים\\projects\\REST-API\\models\\todo.js");
 
-// ✅ 1. Get all tasks
-router.get("/todos", async (req, res) => {
-    const todos = await Todo.find();
-    res.json(todos);
+// Create a new Todo
+router.post("/", async (req, res) => {
+  try {
+    const todo = new Todo(req.body);  // Create a new todo from the request body
+    await todo.save();  // Save the todo to the database
+    res.status(201).json(todo);  // Respond with the created todo
+  } catch (err) {
+    res.status(400).json({ error: err.message });  // Handle errors
+  }
 });
 
-// ✅ 2. Create a new task
-router.post("/todos", async (req, res) => {
-    const newTodo = new Todo({ task: req.body.task });
-    await newTodo.save();
-    res.json(newTodo);
+// Get all Todos
+router.get("/", async (req, res) => {
+  try {
+    const todos = await Todo.find();  // Fetch all todos from the database
+    res.json(todos);  // Send the list of todos as a response
+  } catch (err) {
+    res.status(500).json({ error: err.message });  // Handle errors
+  }
 });
 
-// ✅ 3. Update a task (mark as completed)
-router.put("/todos/:id", async (req, res) => {
-    const updatedTodo = await Todo.findByIdAndUpdate(req.params.id, { completed: req.body.completed }, { new: true });
-    res.json(updatedTodo);
+// Update a Todo by ID
+router.put("/:id", async (req, res) => {
+  try {
+    const updatedTodo = await Todo.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    res.json(updatedTodo);  // Respond with the updated todo
+  } catch (err) {
+    res.status(400).json({ error: err.message });  // Handle errors
+  }
 });
 
-// ✅ 4. Delete a task
-router.delete("/todos/:id", async (req, res) => {
-    await Todo.findByIdAndDelete(req.params.id);
-    res.json({ message: "Task deleted" });
+// Delete a Todo by ID
+router.delete("/:id", async (req, res) => {
+  try {
+    await Todo.findByIdAndDelete(req.params.id);  // Delete the todo by ID
+    res.status(204).send();  // Respond with no content after deletion
+  } catch (err) {
+    res.status(500).json({ error: err.message });  // Handle errors
+  }
 });
 
 module.exports = router;
