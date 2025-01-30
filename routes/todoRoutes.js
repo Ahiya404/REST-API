@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const Todo = require("/models/Todo");
+const Todo = require("C:\\Users\\test0\\OneDrive\\מסמכים\\projects\\REST-API\\models\\todo.js");
 
 // ✅ 1. Get all tasks
 router.get("/todos", async (req, res) => {
